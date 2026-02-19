@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
+import Navbar from "@/components/navigation/navbar";
 
 const inter = localFont({
   src: "./fonts/InterVF.ttf",
   variable: "--font-inter",
-  weight: "100 200 300 400 500 600 700 800 900"
+  weight: "100 200 300 400 500 600 700 800 900",
 });
 
 const spaceGrotesk = localFont({
@@ -17,6 +19,9 @@ const spaceGrotesk = localFont({
 export const metadata: Metadata = {
   title: "StackUnderFlow",
   description: "StackOverFlow Clone",
+  icons: {
+    icon: "/images/site-logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -25,11 +30,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar/>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
