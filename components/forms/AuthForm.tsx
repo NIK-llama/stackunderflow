@@ -66,7 +66,6 @@ const AuthForm = <T extends FieldValues>({
                     type={field.name === "password" ? "password" : "text"}
                     {...field}
                     className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
-                    placeholder="Login button not working on mobile"
                   />
                 </Field>
               )}
