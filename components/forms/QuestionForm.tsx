@@ -11,8 +11,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
+import { useRef } from "react";
+import { MDXEditorMethods } from "@mdxeditor/editor";
+import dynamic from "next/dynamic";
+
+const Editor = dynamic(() => import('@/components/editor'), {
+  ssr: false
+})
 
 const QuestionForm = () => {
+  const editorRef = useRef<MDXEditorMethods>(null);
   const form = useForm({
     resolver: zodResolver(AskQuestionSchema),
     defaultValues: {
@@ -64,7 +72,11 @@ const QuestionForm = () => {
                   Detailed explanation of your problem{" "}
                   <span className="text-primary-500">*</span>
                 </FieldLabel>
-                Editor
+                <Editor
+                  value={field.value}
+                  editorRef={editorRef}
+                  fieldChange={field.onChange}
+                />
                 <FieldDescription className="body-regular text-light-500 mt-2.5">
                   Introduce the problem and expand on what you&apos;ve put in
                   the title.
