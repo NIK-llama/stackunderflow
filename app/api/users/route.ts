@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
     }
 
-    const { email, username } =  validatedData.data;
+    const { email, username } = validatedData.data;
 
     const existingUser = await prisma.user.findFirst({
       where: {
@@ -33,12 +33,8 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      if (existingUser.email === email) {
-        throw new Error("User already exists");
-      }
-      if (existingUser.username === username) {
-        throw new Error("Username already exists");
-      }
+      const message = existingUser.email === email ? "Email already exists" : "Username already exists";
+      throw new Error(message);
     }
 
     const newUser = await prisma.user.create({
