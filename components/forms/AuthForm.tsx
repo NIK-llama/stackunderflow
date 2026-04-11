@@ -59,7 +59,7 @@ const AuthForm = <T extends FieldValues>({
   const buttonText = formType === "SIGN_IN" ? "Sign In" : "Sign Up";
 
   return (
-    <div className="p-4 max-w-sm">
+    <div className="w-full">
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
         className="mt-10 space-y-6"
