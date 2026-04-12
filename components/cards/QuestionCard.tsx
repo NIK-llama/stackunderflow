@@ -3,12 +3,13 @@ import { getTimeStamp } from "@/lib/utils";
 import Link from "next/link";
 import TagCard from "./TagCard";
 import Metric from "../Metric";
+import { Question, Tag } from "@/types/global";
 
 interface Props {
   question: Question;
 }
 const QuestionCard = ({
-  question: { _id, title, tags, author, createdAt, upvotes, answers, views },
+  question: { id, title, tags, author, createdAt, upvotes, answers, views },
 }: Props) => {
   return (
     <div className="card-wrapper rounded-[10px] p-9 sm:px-11">
@@ -18,7 +19,7 @@ const QuestionCard = ({
             {getTimeStamp(createdAt)}
           </span>
 
-          <Link href={ROUTES.QUESTION(_id)}>
+          <Link href={ROUTES.QUESTION(id)}>
             <h3
               className="sm:h3-semibold base-semibold 
             text-dark200_light900 line-clamp-1 flex-1"
@@ -31,7 +32,7 @@ const QuestionCard = ({
 
       <div className="mt-3.5 flex w-full flex-wrap gap-2">
         {tags.map((tag: Tag) => (
-          <TagCard key={tag._id} _id={tag._id} name={tag.name} compact />
+          <TagCard key={tag.id} id={tag.id} name={tag.name} compact />
         ))}
       </div>
 
@@ -41,7 +42,7 @@ const QuestionCard = ({
           alt={author.name}
           value={author.name}
           title={`• asked ${getTimeStamp(createdAt)}`}
-          href={ROUTES.PROFILE(author._id)}
+          href={ROUTES.PROFILE(author.id)}
           textStyles="body-medium text-dark400_light700"
           isAuthor
         />

@@ -6,7 +6,7 @@ import { getDeviconClassName } from "@/lib/utils";
 import Image from "next/image";
 
 interface Props {
-  _id: string;
+  id: string;
   name: string;
   questions?: number;
   showCount?: boolean;
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const TagCard = ({
-  _id,
+  id,
   name,
   questions,
   showCount,
@@ -65,7 +65,7 @@ const TagCard = ({
     return isButton ? (
       <button onClick={handleClick} className="flex justify-between gap-2">{Content}</button>
     ) : (
-      <Link href={ROUTES.TAGS(_id)} className="flex justify-between gap-2">
+      <Link href={ROUTES.TAGS(id)} className="flex justify-between gap-2">
         {Content}
       </Link>
     );
