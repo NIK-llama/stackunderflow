@@ -2,7 +2,7 @@
 
 import { ActionResponse, ErrorResponse, Question } from "@/types/global";
 import action from "../handlers/action";
-import { AskQuestionSchema } from "../validations";
+import { AskQuestionSchema, EditQuestionSchema } from "../validations";
 import handleError from "../handlers/error";
 import prisma from "../prisma";
 import { after } from "next/server";
@@ -54,6 +54,63 @@ export async function createQuestion(
     // });
 
     return { success: true, data: JSON.parse(JSON.stringify(question)) };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function editQuestion(
+  params: EditQuestionParams,
+): Promise<ActionResponse<Question>> {
+  const validationResult = await action({
+    params,
+    schema: EditQuestionSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { title, content, tags, questionId } = validationResult.params!;
+  const userId = validationResult.session?.user?.id;
+
+  try {
+    const updatedQuestion = await prisma.$transaction(async (tx) => {
+      const existingQuestion = await tx.question.findUnique({
+        where: { id: questionId },
+        select: { authorId: true },
+      });
+
+      if (!existingQuestion) throw new Error("Question not found");
+      if (existingQuestion.authorId !== userId) {
+        throw new Error("You are not authorized to edit this question");
+      }
+
+      return await tx.question.update({
+        where: { id: questionId },
+        data: {
+          title,
+          content,
+          tags: {
+            set: [],
+            connectOrCreate: tags.map((tag: string) => ({
+              where: { name: tag.trim().toLowerCase() },
+              create: { name: tag.trim().toLowerCase() },
+            })),
+          },
+        },
+        include: {
+          tags: true,
+          author: { select: { id: true, name: true, image: true } },
+        },
+      });
+    });
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(updatedQuestion)),
+    };
   } catch (error) {
     return handleError(error) as ErrorResponse;
   }
