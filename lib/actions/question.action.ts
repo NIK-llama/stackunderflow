@@ -2,10 +2,15 @@
 
 import { ActionResponse, ErrorResponse, Question } from "@/types/global";
 import action from "../handlers/action";
-import { AskQuestionSchema, EditQuestionSchema } from "../validations";
+import {
+  AskQuestionSchema,
+  EditQuestionSchema,
+  GetQuestionSchema,
+} from "../validations";
 import handleError from "../handlers/error";
 import prisma from "../prisma";
 import { after } from "next/server";
+import { cache } from "react";
 
 export async function createQuestion(
   params: CreateQuestionParams,
@@ -115,3 +120,49 @@ export async function editQuestion(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export const getQuestion = cache(async function getQuestion(
+  params: GetQuestionParams,
+): Promise<ActionResponse<Question>> {
+  const validationResult = await action({
+    params,
+    schema: GetQuestionSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { questionId } = validationResult.params!;
+
+  try {
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+      include: {
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+      },
+    });
+
+    if (!question) throw new Error("Question not found");
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(question)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+});
