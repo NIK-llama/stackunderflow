@@ -14,6 +14,7 @@ export interface Author {
 export interface Question {
   id: string;
   title: string;
+  content: string;
   tags: Tag[];
   author: Author;
   createdAt: Date;
