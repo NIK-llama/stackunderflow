@@ -1,16 +1,23 @@
 "use server";
 
-import { ActionResponse, ErrorResponse, Question } from "@/types/global";
+import {
+  ActionResponse,
+  ErrorResponse,
+  PaginatedSearchParams,
+  Question,
+} from "@/types/global";
 import action from "../handlers/action";
 import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  PaginatedSearchParamsSchema,
 } from "../validations";
 import handleError from "../handlers/error";
 import prisma from "../prisma";
 import { after } from "next/server";
 import { cache } from "react";
+import { Prisma } from "@/app/generated/prisma/client";
 
 export async function createQuestion(
   params: CreateQuestionParams,
@@ -166,3 +173,85 @@ export const getQuestion = cache(async function getQuestion(
     return handleError(error) as ErrorResponse;
   }
 });
+
+export async function getQuestions(params: PaginatedSearchParams): Promise<
+  ActionResponse<{
+    questions: Question[];
+    isNext: boolean;
+  }>
+> {
+  const validationResult = await action({
+    params,
+    schema: PaginatedSearchParamsSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { page = 1, pageSize = 10, query, filter } = validationResult.params!;
+
+  const skip = (page - 1) * pageSize;
+  const take = pageSize;
+
+  if (filter === "recommended") {
+    // TODO
+    return { success: true, data: { questions: [], isNext: false } };
+  }
+
+  const where: Prisma.QuestionWhereInput = {};
+
+  if (query) {
+    where.OR = [
+      { title: { contains: query, mode: "insensitive" } },
+      { content: { contains: query, mode: "insensitive" } },
+    ];
+  }
+
+  let orderBy: Prisma.QuestionOrderByWithRelationInput = { createdAt: "desc" };
+
+  switch (filter) {
+    case "newest":
+      orderBy = { createdAt: "desc" };
+      break;
+    case "unanswered":
+      // In Prisma, we check if the relation array is empty
+      where.answers = { none: {} };
+      orderBy = { createdAt: "desc" };
+      break;
+    case "popular":
+      orderBy = { upvotes: "desc" };
+      break;
+    default:
+      orderBy = { createdAt: "desc" };
+      break;
+  }
+
+  try {
+    const [questions, totalQuestions] = await prisma.$transaction([
+      prisma.question.findMany({
+        where,
+        include: {
+          tags: { select: { id: true, name: true } },
+          author: { select: { id: true, name: true, image: true } },
+        },
+        orderBy,
+        skip,
+        take,
+      }),
+      prisma.question.count({ where }),
+    ]);
+
+    const isNext = totalQuestions > skip + questions.length;
+
+    return {
+      success: true,
+      data: {
+        questions: JSON.parse(JSON.stringify(questions)),
+        isNext,
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}

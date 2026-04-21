@@ -146,7 +146,7 @@ model Collection {
 
   createdAt  DateTime @default(now())
 
-  @@unique([userId, questionId])   // 🔥 prevent duplicate saves
+  @@unique([userId, questionId])   
   @@index([userId])
   @@index([questionId])
 }
