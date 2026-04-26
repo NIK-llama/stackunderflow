@@ -4,7 +4,6 @@ import {
   ActionResponse,
   ErrorResponse,
   PaginatedSearchParams,
-  Question,
 } from "@/types/global";
 import action from "../handlers/action";
 import {
@@ -17,7 +16,7 @@ import handleError from "../handlers/error";
 import prisma from "../prisma";
 import { after } from "next/server";
 import { cache } from "react";
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma, Question } from "@/app/generated/prisma/client";
 
 export async function createQuestion(
   params: CreateQuestionParams,
