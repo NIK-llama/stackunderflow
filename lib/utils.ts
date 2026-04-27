@@ -1,3 +1,4 @@
+import { techDescriptionMap } from "@/constants/techDescriptionMap";
 import { techMap } from "@/constants/techMap";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -6,8 +7,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getTechDescription(techName: string): string {
+  const normalizedTech = techName.replace(/[ .]/g, "").toLowerCase();
+
+  return techDescriptionMap[normalizedTech]
+    ? techDescriptionMap[normalizedTech]
+    : `${techName} is a widely used technology in modern software development.`;
+}
+
 export const getDeviconClassName = (techName: string) => {
-  const normalizedTechName = techName.replace(/[ .]/g, "").toLocaleLowerCase();
+  const normalizedTechName = techName.replace(/[ .]/g, "").toLowerCase();
 
   return `${techMap[normalizedTechName] || "devicon-devicon-plain"} colored`;
 };
