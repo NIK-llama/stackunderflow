@@ -28,7 +28,6 @@ const TagCard = ({
 }: Props) => {
   const iconClass = getDeviconClassName(name);
   const iconDescription = getTechDescription(name);
-  const questionCount = questions ?? 0;
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -93,7 +92,7 @@ const TagCard = ({
 
         <p className="small-medium text-dark400_light500 mt-3.5">
           <span className="body-semibold primary-text-gradient mr-2.5">
-            {questionCount}+
+            {questions}+
           </span>
           Questions
         </p>

@@ -8,10 +8,11 @@ import { PaginatedSearchParamsSchema } from "../validations";
 import handleError from "../handlers/error";
 import { Prisma, Tag } from "@/app/generated/prisma/client";
 import prisma from "../prisma";
+export type FlattenedTag = Tag & { questions: number };
 
 export const getTags = async (
-  params: PaginatedSearchParams
-): Promise<ActionResponse<{ tags: Tag[]; isNext: boolean }>> => {
+  params: PaginatedSearchParams,
+): Promise<ActionResponse<{ tags: FlattenedTag[]; isNext: boolean }>> => {
   const validationResult = await action({
     params,
     schema: PaginatedSearchParamsSchema,
@@ -30,8 +31,8 @@ export const getTags = async (
     ? { name: { contains: query, mode: "insensitive" } }
     : {};
 
-  let orderBy: Prisma.TagOrderByWithRelationInput = { 
-    questions: { _count: "desc" } 
+  let orderBy: Prisma.TagOrderByWithRelationInput = {
+    questions: { _count: "desc" },
   };
 
   switch (filter) {
@@ -61,19 +62,24 @@ export const getTags = async (
         take,
         include: {
           _count: {
-            select: { questions: true }
-          }
-        }
+            select: { questions: true },
+          },
+        },
       }),
       prisma.tag.count({ where }),
     ]);
+
+    const flattenedTags: FlattenedTag[] = tags.map((tag) => ({
+      ...tag,
+      questions: tag._count.questions,
+    }));
 
     const isNext = totalTags > skip + tags.length;
 
     return {
       success: true,
       data: {
-        tags: JSON.parse(JSON.stringify(tags)),
+        tags: JSON.parse(JSON.stringify(flattenedTags)),
         isNext,
       },
     };

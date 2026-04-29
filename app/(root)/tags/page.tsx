@@ -42,7 +42,6 @@ const Tags = async ({ searchParams }: RouteParams) => {
               <TagCard
                 key={tag.id}
                 {...tag}
-                questions={(tag as typeof tag & { _count?: { questions?: number } })._count?.questions ?? 0}
               />
             ))}
           </div>
