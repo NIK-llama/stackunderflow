@@ -45,31 +45,32 @@ const QuestionCard = ({
           href={ROUTES.PROFILE(author.id)}
           textStyles="body-medium text-dark400_light700"
           isAuthor
+          titleStyles="max-sm:hidden"
         />
 
         <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
-          <Metric 
-          imgUrl="/icons/like.svg"
-          alt="like"
-          value={upvotes}
-          title=" Votes"
-          textStyles="small-medium text-dark400_light800"
+          <Metric
+            imgUrl="/icons/like.svg"
+            alt="like"
+            value={upvotes}
+            title=" Votes"
+            textStyles="small-medium text-dark400_light800"
           />
 
-          <Metric 
-          imgUrl="/icons/message.svg"
-          alt="answers"
-          value={answers}
-          title=" Answers"
-          textStyles="small-medium text-dark400_light800"
+          <Metric
+            imgUrl="/icons/message.svg"
+            alt="answers"
+            value={answers}
+            title=" Answers"
+            textStyles="small-medium text-dark400_light800"
           />
 
-          <Metric 
-          imgUrl="/icons/eye.svg"
-          alt="views"
-          value={views}
-          title=" Views"
-          textStyles="small-medium text-dark400_light800"
+          <Metric
+            imgUrl="/icons/eye.svg"
+            alt="views"
+            value={views}
+            title=" Views"
+            textStyles="small-medium text-dark400_light800"
           />
         </div>
       </div>

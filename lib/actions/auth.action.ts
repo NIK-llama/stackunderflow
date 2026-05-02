@@ -8,6 +8,7 @@ import prisma from "../prisma";
 import bcrypt from "bcryptjs";
 import { signIn } from "@/auth";
 import { NotFoundError } from "../http-errors";
+import { AuthCredentials } from "@/types/action";
 
 export async function signUpWithCredentials(
   params: AuthCredentials,

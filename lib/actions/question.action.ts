@@ -18,6 +18,7 @@ import prisma from "../prisma";
 import { after } from "next/server";
 import { cache } from "react";
 import { Prisma } from "@/app/generated/prisma/client";
+import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from "@/types/action";
 
 export async function createQuestion(
   params: CreateQuestionParams,
