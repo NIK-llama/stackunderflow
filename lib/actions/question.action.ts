@@ -11,6 +11,7 @@ import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  IncrementViewsSchema,
   PaginatedSearchParamsSchema,
 } from "../validations";
 import handleError from "../handlers/error";
@@ -18,7 +19,12 @@ import prisma from "../prisma";
 import { after } from "next/server";
 import { cache } from "react";
 import { Prisma } from "@/app/generated/prisma/client";
-import { CreateQuestionParams, EditQuestionParams, GetQuestionParams } from "@/types/action";
+import {
+  CreateQuestionParams,
+  EditQuestionParams,
+  GetQuestionParams,
+  IncrementViewsParams,
+} from "@/types/action";
 
 export async function createQuestion(
   params: CreateQuestionParams,
@@ -251,6 +257,39 @@ export async function getQuestions(params: PaginatedSearchParams): Promise<
         questions: JSON.parse(JSON.stringify(questions)),
         isNext,
       },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function incrementViews(
+  params: IncrementViewsParams,
+): Promise<ActionResponse<{ views: number }>> {
+  const validationResult = await action({
+    params,
+    schema: IncrementViewsSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { questionId } = validationResult.params!;
+
+  try {
+    const updatedQuestion = await prisma.question.update({
+      where: { id: questionId },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+
+    return {
+      success: true,
+      data: { views: updatedQuestion.views },
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;

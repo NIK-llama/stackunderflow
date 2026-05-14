@@ -3,16 +3,18 @@ import { Preview } from "@/components/editor/Preview";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { getQuestion } from "@/lib/actions/question.action";
+import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams, Tag } from "@/types/global";
 import Link from "next/link";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
-  const { success, data: question } = await getQuestion({
-    questionId: id,
-  });
+
+  const [_, { success, data: question }] = await Promise.all([
+    await incrementViews({ questionId: id }),
+    await getQuestion({ questionId: id }),
+  ]);
 
   if (!success || !question) {
     return {
@@ -35,7 +37,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
               fallbackClassName="text-[10px]"
             />
             <Link href={ROUTES.PROFILE(author.id)}>
-              <p className="paragraph-semibold text-dark300_light700">{author.name}</p>
+              <p className="paragraph-semibold text-dark300_light700">
+                {author.name}
+              </p>
             </Link>
           </div>
 
@@ -44,7 +48,9 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           </div>
         </div>
 
-        <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">{title}</h2>
+        <h2 className="h2-semibold text-dark200_light900 mt-3.5 w-full">
+          {title}
+        </h2>
       </div>
 
       <div className="mb-8 mt-5 flex flex-wrap gap-4">
@@ -75,12 +81,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
 
       <div className="mt-8 flex flex-wrap gap-2">
         {tags.map((tag: Tag) => (
-          <TagCard
-            key={tag.id}
-            id={tag.id as string}
-            name={tag.name}
-            compact
-          />
+          <TagCard key={tag.id} id={tag.id as string} name={tag.name} compact />
         ))}
       </div>
     </>
