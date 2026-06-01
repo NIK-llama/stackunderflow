@@ -122,13 +122,19 @@ export async function editQuestion(
         include: {
           tags: true,
           author: { select: { id: true, name: true, image: true } },
+          _count: { select: { answers: true } },
         },
       });
     });
 
+    const flattenedUpdatedQuestion = {
+      ...updatedQuestion,
+      answers: updatedQuestion._count.answers,
+    };
+
     return {
       success: true,
-      data: JSON.parse(JSON.stringify(updatedQuestion)),
+      data: JSON.parse(JSON.stringify(flattenedUpdatedQuestion)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -167,14 +173,24 @@ export const getQuestion = cache(async function getQuestion(
             image: true,
           },
         },
+        _count: {
+          select: {
+            answers: true,
+          },
+        },
       },
     });
 
     if (!question) throw new Error("Question not found");
 
+    const flattenedQuestion = {
+      ...question,
+      answers: question._count.answers,
+    };
+
     return {
       success: true,
-      data: JSON.parse(JSON.stringify(question)),
+      data: JSON.parse(JSON.stringify(flattenedQuestion)),
     };
   } catch (error) {
     return handleError(error) as ErrorResponse;
@@ -241,6 +257,7 @@ export async function getQuestions(params: PaginatedSearchParams): Promise<
         include: {
           tags: { select: { id: true, name: true } },
           author: { select: { id: true, name: true, image: true } },
+          _count: { select: { answers: true } },
         },
         orderBy,
         skip,
@@ -251,10 +268,15 @@ export async function getQuestions(params: PaginatedSearchParams): Promise<
 
     const isNext = totalQuestions > skip + questions.length;
 
+    const flattenedQuestions = questions.map((q) => ({
+      ...q,
+      answers: q._count.answers,
+    }));
+
     return {
       success: true,
       data: {
-        questions: JSON.parse(JSON.stringify(questions)),
+        questions: JSON.parse(JSON.stringify(flattenedQuestions)),
         isNext,
       },
     };

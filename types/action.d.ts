@@ -1,6 +1,6 @@
 import { PaginatedSearchParams } from "./global";
 
-interface SignInWithOAuthParams {
+export interface SignInWithOAuthParams {
   provider: "github" | "google";
   providerAccountId: string;
   user: {
@@ -11,36 +11,36 @@ interface SignInWithOAuthParams {
   };
 }
 
-interface AuthCredentials {
+export interface AuthCredentials {
   name: string;
   username: string;
   email: string;
   password: string;
 }
 
-interface CreateQuestionParams {
+export interface CreateQuestionParams {
     title: string;
     content: string;
     tags: string[];
 }
 
-interface EditQuestionParams extends CreateQuestionParams {
+export interface EditQuestionParams extends CreateQuestionParams {
   questionId: string;
 }
 
-interface GetQuestionParams {
+export interface GetQuestionParams {
   questionId: string;
 }
 
-interface GetTagQuestionsParams extends Omit<PaginatedSearchParams, "filter"> {
+export interface GetTagQuestionsParams extends Omit<PaginatedSearchParams, "filter"> {
   tagId: string;
 }
 
-interface IncrementViewsParams {
+export interface IncrementViewsParams {
   questionId: string;
 }
 
-interface CreateAnswerParams {
+export interface CreateAnswerParams {
   content: string;
   questionId: string;
 }

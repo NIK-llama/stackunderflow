@@ -1,4 +1,5 @@
 import { Account, User } from "@/app/generated/prisma/client";
+import { SignInWithOAuthParams } from "@/types/action";
 import { fetchHandler } from "./handlers/fetch";
 
 const API_BASE_URL =

@@ -8,6 +8,7 @@ import { getQuestion, incrementViews } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { RouteParams, Tag } from "@/types/global";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { after } from "next/server";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
@@ -19,10 +20,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
   });
 
   if (!success || !question) {
-    return {
-      title: "Question not found",
-      description: "This question does not exist.",
-    };
+    return notFound();
   }
 
   const { author, createdAt, answers, views, tags, content, title } = question;
