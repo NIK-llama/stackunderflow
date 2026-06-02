@@ -51,3 +51,13 @@ interface PaginatedSearchParams {
   filter?: string;
   sort?: string;
 }
+
+export interface Answer {
+  id: string;
+  author: Author;
+  content: string;
+  upvotes: number;
+  question: string;
+  downvotes: number;
+  createdAt: Date;
+}
