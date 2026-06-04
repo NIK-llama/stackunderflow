@@ -7,8 +7,37 @@ Code.theme = {
   lightSelector: "html.light",
 };
 
+const escapeMdxElements = (markdown: string) => {
+  const parts = markdown.split("```");
+  const processedParts = parts.map((part, index) => {
+    if (index % 2 === 1) {
+      // Inside fenced code block
+      return part;
+    }
+
+    const subParts = part.split("`");
+    const processedSubParts = subParts.map((subPart, subIndex) => {
+      if (subIndex % 2 === 1) {
+        // Inside inline code
+        return subPart;
+      }
+
+      // Outside code blocks, escape curly braces and HTML-like tags
+      return subPart
+        .replace(/{/g, "&#123;")
+        .replace(/}/g, "&#125;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    });
+
+    return processedSubParts.join("`");
+  });
+  return processedParts.join("```");
+};
+
 export const Preview = ({ content }: { content: string }) => {
-  const formattedContent = content.replace(/\\/g, "").replace(/&#x20;/g, "");
+  const escapedContent = escapeMdxElements(content);
+  const formattedContent = escapedContent.replace(/\\/g, "").replace(/&#x20;/g, "");
 
   return (
     <section className="markdown prose grid break-words">

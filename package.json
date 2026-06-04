@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.80",
-    "@ai-sdk/openai": "^3.0.67",
     "@hookform/resolvers": "^5.2.2",
     "@mdxeditor/editor": "^3.52.5",
     "@prisma/adapter-pg": "^7.5.0",
