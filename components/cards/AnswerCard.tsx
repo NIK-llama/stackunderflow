@@ -6,10 +6,10 @@ import { Answer } from "@/types/global";
 
 import { Preview } from "../editor/Preview";
 import UserAvatar from "../UserAvatar";
+import { Suspense } from "react";
+import Votes from "../votes/Votes";
+import { hasVoted } from "@/lib/actions/vote.action";
 
-// Will implement these later when voting and edit/delete actions are added:
-// import { hasVoted } from "@/lib/actions/vote.action";
-// import Votes from "../votes/Votes";
 // import EditDeleteAction from "../user/EditDeleteAction";
 
 interface Props extends Answer {
@@ -30,11 +30,10 @@ const AnswerCard = ({
   showReadMore = false,
   showActionBtns = false,
 }: Props) => {
-  // Will implement later:
-  // const hasVotedPromise = hasVoted({
-  //   targetId: id,
-  //   targetType: "answer",
-  // });
+  const hasVotedPromise = hasVoted({
+    targetId: id,
+    targetType: "answer",
+  });
 
   return (
     <article
@@ -73,7 +72,6 @@ const AnswerCard = ({
         </div>
 
         <div className="flex justify-end">
-          {/* Votes will be added later:
           <Suspense fallback={<div>Loading...</div>}>
             <Votes
               targetType="answer"
@@ -83,10 +81,6 @@ const AnswerCard = ({
               downvotes={downvotes}
             />
           </Suspense>
-          */}
-          <div className="flex items-center gap-1">
-            <span className="small-medium text-dark400_light800">{upvotes - downvotes} votes</span>
-          </div>
         </div>
       </div>
 
