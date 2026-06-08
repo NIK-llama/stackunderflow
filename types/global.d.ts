@@ -62,3 +62,16 @@ export interface Answer {
   downvotes: number;
   createdAt: Date;
 }
+
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  bio?: string | null;
+  image?: string | null;
+  location?: string | null;
+  portfolio?: string | null;
+  reputation?: number;
+  createdAt: Date;
+}
