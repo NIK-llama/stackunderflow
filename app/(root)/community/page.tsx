@@ -6,7 +6,7 @@ import { EMPTY_USERS } from "@/constants/states";
 import { getUsers } from "@/lib/actions/user.action";
 import { RouteParams } from "@/types/global";
 import CommonFilter from "@/components/filters/CommonFilter";
-// import Pagination from "@/components/Pagination";
+import Pagination from "@/components/Pagination";
 import { UserFilters } from "@/constants/filters";
 
 const Community = async ({ searchParams }: RouteParams) => {
@@ -19,7 +19,7 @@ const Community = async ({ searchParams }: RouteParams) => {
     filter,
   });
 
-  const { users } = data || {};
+  const { users, isNext } = data || {};
 
   return (
     <div>
@@ -54,8 +54,7 @@ const Community = async ({ searchParams }: RouteParams) => {
         )}
       />
 
-      {/* Commented out since Pagination is not implemented yet */}
-      {/* <Pagination page={page} isNext={isNext || false} /> */}
+      <Pagination page={page} isNext={isNext || false} />
     </div>
   );
 };

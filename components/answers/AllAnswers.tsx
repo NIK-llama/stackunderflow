@@ -4,11 +4,11 @@ import AnswerCard from "../cards/AnswerCard";
 import DataRenderer from "../DataRenderer";
 import CommonFilter from "../filters/CommonFilter";
 import { AnswerFilters } from "@/constants/filters";
-// import Pagination from "../Pagination";
+import Pagination from "../Pagination";
 
 interface Props extends ActionResponse<Answer[]> {
-  page?: number;
-  isNext?: boolean;
+  page: number;
+  isNext: boolean;
   totalAnswers: number;
 }
 
@@ -43,7 +43,7 @@ const AllAnswers = ({
         }
       />
 
-      {/* Pagination will be added later: <Pagination page={page} isNext={isNext} /> */}
+      <Pagination page={page} isNext={isNext} />
     </div>
   );
 };
