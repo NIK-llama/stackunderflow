@@ -61,7 +61,7 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
   };
 
   const generateAIAnswer = async () => {
-    if (session.status !== "authenticated") {
+    if (!session?.data?.user) {
       return toast.error("Please log in", {
         description: "You need to be logged in to use this feature",
       });

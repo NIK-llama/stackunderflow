@@ -5,11 +5,9 @@ import ROUTES from "@/constants/routes";
 import { EMPTY_USERS } from "@/constants/states";
 import { getUsers } from "@/lib/actions/user.action";
 import { RouteParams } from "@/types/global";
-
-// Commented out since they are not present/implemented yet:
-// import CommonFilter from "@/components/filters/CommonFilter";
+import CommonFilter from "@/components/filters/CommonFilter";
 // import Pagination from "@/components/Pagination";
-// import { UserFilters } from "@/constants/filters";
+import { UserFilters } from "@/constants/filters";
 
 const Community = async ({ searchParams }: RouteParams) => {
   const { page, pageSize, query, filter } = await searchParams;
@@ -36,11 +34,10 @@ const Community = async ({ searchParams }: RouteParams) => {
           otherClasses="flex-1"
         />
 
-        {/* Commented out since CommonFilter is not implemented yet */}
-        {/* <CommonFilter
+        <CommonFilter
           filters={UserFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-        /> */}
+        />
       </div>
 
       <DataRenderer

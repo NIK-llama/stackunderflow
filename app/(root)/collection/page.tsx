@@ -1,10 +1,9 @@
 import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
-// Commented out since they are not present/implemented yet:
-// import CommonFilter from "@/components/filters/CommonFilter";
+import CommonFilter from "@/components/filters/CommonFilter";
 // import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/search/LocalSearch";
-// import { CollectionFilters } from "@/constants/filters";
+import { CollectionFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
 import { getSavedQuestions } from "@/lib/actions/collection.action";
@@ -37,11 +36,10 @@ const Collections = async ({ searchParams }: SearchParams) => {
           otherClasses="flex-1"
         />
 
-        {/* Commented out since CommonFilter is not implemented yet */}
-        {/* <CommonFilter
+        <CommonFilter
           filters={CollectionFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-        /> */}
+        />
       </div>
 
       <DataRenderer
