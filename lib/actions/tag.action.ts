@@ -171,3 +171,33 @@ export const getTagQuestions = async (
     return handleError(error) as ErrorResponse;
   }
 };
+
+export const getTopTags = async (): Promise<ActionResponse<FlattenedTag[]>> => {
+  try {
+    const tags = await prisma.tag.findMany({
+      orderBy: {
+        questions: {
+          _count: "desc",
+        },
+      },
+      take: 5,
+      include: {
+        _count: {
+          select: { questions: true },
+        },
+      },
+    });
+
+    const flattenedTags = tags.map((tag) => ({
+      ...tag,
+      questions: tag._count.questions,
+    }));
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(flattenedTags)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+};

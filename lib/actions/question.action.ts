@@ -317,3 +317,33 @@ export async function incrementViews(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function getHotQuestions(): Promise<ActionResponse<Question[]>> {
+  try {
+    const questions = await prisma.question.findMany({
+      orderBy: [
+        { views: "desc" },
+        { upvotes: "desc" },
+      ],
+      take: 5,
+      include: {
+        tags: { select: { id: true, name: true } },
+        author: { select: { id: true, name: true, image: true } },
+        _count: { select: { answers: true } },
+      },
+    });
+
+    const flattenedQuestions = questions.map((q) => ({
+      ...q,
+      answers: q._count.answers,
+    }));
+
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(flattenedQuestions)),
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
