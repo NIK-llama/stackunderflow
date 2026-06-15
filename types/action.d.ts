@@ -19,9 +19,9 @@ export interface AuthCredentials {
 }
 
 export interface CreateQuestionParams {
-    title: string;
-    content: string;
-    tags: string[];
+  title: string;
+  content: string;
+  tags: string[];
 }
 
 export interface EditQuestionParams extends CreateQuestionParams {
@@ -32,7 +32,10 @@ export interface GetQuestionParams {
   questionId: string;
 }
 
-export interface GetTagQuestionsParams extends Omit<PaginatedSearchParams, "filter"> {
+export interface GetTagQuestionsParams extends Omit<
+  PaginatedSearchParams,
+  "filter"
+> {
   tagId: string;
 }
 
@@ -61,11 +64,85 @@ interface UpdateVoteCountParams extends CreateVoteParams {
 
 type HasVotedParams = Pick<CreateVoteParams, "targetId" | "targetType">;
 
-interface HasVotedResponse {
+export interface HasVotedResponse {
   hasUpvoted: boolean;
   hasDownvoted: boolean;
 }
 
-interface CollectionBaseParams {
+export interface CollectionBaseParams {
   questionId: string;
+}
+
+export interface GetUserParams {
+  userId: string;
+}
+
+export interface GetUserQuestionsParams extends Omit<
+  PaginatedSearchParams,
+  "query | filter | sort"
+> {
+  userId: string;
+}
+
+export interface GetUserAnswersParams extends PaginatedSearchParams {
+  userId: string;
+}
+
+export interface GetUserTagsParams {
+  userId: string;
+}
+
+export interface DeleteQuestionParams {
+  questionId: string;
+}
+
+export interface DeleteAnswerParams {
+  answerId: string;
+}
+
+export interface CreateInteractionParams {
+  action:
+    | "view"
+    | "upvote"
+    | "downvote"
+    | "bookmark"
+    | "post"
+    | "edit"
+    | "delete"
+    | "search";
+  actionId: string;
+  authorId: string;
+  actionTarget: "question" | "answer";
+}
+
+export interface UpdateReputationParams {
+  interaction: IInteractionDoc;
+  session: mongoose.ClientSession;
+  performerId: string;
+  authorId: string;
+}
+
+export interface RecommendationParams {
+  userId: string;
+  query?: string;
+  skip: number;
+  limit: number;
+}
+
+export interface JobFilterParams {
+  query: string;
+  page: string;
+}
+
+export interface UpdateUserParams {
+  name?: string;
+  username?: string;
+  email?: string;
+  image?: string;
+  password?: string;
+}
+
+export interface GlobalSearchParams {
+  query: string;
+  type: string | null;
 }

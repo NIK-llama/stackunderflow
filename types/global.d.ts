@@ -46,7 +46,7 @@ export interface RouteParams {
   searchParams: Promise<Record<string, string>>;
 }
 
-interface PaginatedSearchParams {
+export interface PaginatedSearchParams {
   page?: number;
   pageSize?: number;
   query?: string;
@@ -64,7 +64,7 @@ export interface Answer {
   createdAt: Date;
 }
 
-interface User {
+export interface User {
   id: string;
   name: string;
   username: string;
@@ -77,7 +77,7 @@ interface User {
   createdAt: Date;
 }
 
-interface Collection {
+export interface Collection {
   id: string;
   author: string | Author;
   question: Question;
