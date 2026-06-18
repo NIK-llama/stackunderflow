@@ -115,13 +115,6 @@ export interface CreateInteractionParams {
   actionTarget: "question" | "answer";
 }
 
-export interface UpdateReputationParams {
-  interaction: IInteractionDoc;
-  session: mongoose.ClientSession;
-  performerId: string;
-  authorId: string;
-}
-
 export interface RecommendationParams {
   userId: string;
   query?: string;

@@ -175,10 +175,9 @@ const ProfilePage = async ({ params, searchParams }: RouteParams) => {
                     <QuestionCard
                       key={question.id}
                       question={question}
-                      // QuestionCard does not currently support showActionBtns, commenting out
-                      // showActionBtns={
-                      //   loggedInUser?.user?.id === question.author.id
-                      // }
+                      showActionBtns={
+                        loggedInUser?.user?.id === question.author.id
+                      }
                     />
                   ))}
                 </div>

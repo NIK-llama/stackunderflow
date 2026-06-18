@@ -1,15 +1,16 @@
 "use server";
 
 import { Answer as PrismaAnswer } from "@/app/generated/prisma/client";
-import { CreateAnswerParams, GetAnswersParams } from "@/types/action";
+import { CreateAnswerParams, GetAnswersParams, DeleteAnswerParams } from "@/types/action";
 import { ActionResponse, Answer, ErrorResponse } from "@/types/global";
 import action from "../handlers/action";
-import { AnswerServerSchema, GetAnswersSchema } from "../validations";
+import { AnswerServerSchema, GetAnswersSchema, DeleteAnswerSchema } from "../validations";
 import handleError from "../handlers/error";
 import prisma from "../prisma";
 import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
+import { createInteraction } from "./interaction.action";
 
 export async function createAnswer(
   params: CreateAnswerParams,
@@ -50,17 +51,12 @@ export async function createAnswer(
 
     // log the interaction
     after(async () => {
-      try {
-        await prisma.interaction.create({
-          data: {
-            userId: userId as string,
-            answerId: newAnswer.id,
-            action: "POST",
-          },
-        });
-      } catch (error) {
-        console.error("Failed to log interaction", error);
-      }
+      await createInteraction({
+        action: "post",
+        actionId: newAnswer.id,
+        actionTarget: "answer",
+        authorId: userId as string,
+      });
     });
 
     revalidatePath(ROUTES.QUESTION(questionId));
@@ -159,3 +155,56 @@ export async function getAnswers(params: GetAnswersParams): Promise<
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function deleteAnswer(
+  params: DeleteAnswerParams,
+): Promise<ActionResponse> {
+  const validationResult = await action({
+    params,
+    schema: DeleteAnswerSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { answerId } = validationResult.params!;
+  const userId = validationResult.session?.user?.id;
+
+  try {
+    const answer = await prisma.answer.findUnique({
+      where: { id: answerId },
+      select: { authorId: true, questionId: true },
+    });
+
+    if (!answer) throw new Error("Answer not found");
+
+    if (answer.authorId !== userId) {
+      throw new Error("You're not allowed to delete this answer");
+    }
+
+    // Prisma relation onDelete: Cascade handles deleting associated votes and interactions
+    await prisma.answer.delete({
+      where: { id: answerId },
+    });
+
+    // Log the interaction
+    after(async () => {
+      await createInteraction({
+        action: "delete",
+        actionId: answerId,
+        actionTarget: "answer",
+        authorId: answer.authorId,
+      });
+    });
+
+    revalidatePath(`/profile/${userId}`);
+    revalidatePath(ROUTES.QUESTION(answer.questionId));
+
+    return { success: true };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+

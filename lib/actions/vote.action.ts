@@ -13,7 +13,7 @@ import {
   HasVotedSchema,
   UpdateVoteCountSchema,
 } from "../validations";
-// import { createInteraction } from "./interaction.action";
+import { createInteraction } from "./interaction.action";
 import { PrismaClient } from "@/app/generated/prisma/client";
 
 type TransactionClient = Omit<
@@ -85,21 +85,25 @@ export async function createVote(
   if (!userId) return handleError(new Error("Unauthorized")) as ErrorResponse;
 
   try {
+    let questionId = targetId;
+
     await prisma.$transaction(async (tx) => {
-      // let contentAuthorId: string;
+      let contentAuthorId: string;
 
       if (targetType === "question") {
         const question = await tx.question.findUnique({
           where: { id: targetId },
         });
         if (!question) throw new Error("Content not found");
-        // contentAuthorId = question.authorId;
+        contentAuthorId = question.authorId;
+        questionId = targetId;
       } else {
         const answer = await tx.answer.findUnique({
           where: { id: targetId },
         });
         if (!answer) throw new Error("Content not found");
-        // contentAuthorId = answer.authorId;
+        contentAuthorId = answer.authorId;
+        questionId = answer.questionId;
       }
 
       const existingVote = await tx.vote.findFirst({
@@ -180,17 +184,17 @@ export async function createVote(
       }
 
       // log the interaction
-      //   after(async () => {
-      //     await createInteraction({
-      //       action: voteType,
-      //       actionId: targetId,
-      //       actionTarget: targetType,
-      //       authorId: contentAuthorId,
-      //     });
-      //   });
+      after(async () => {
+        await createInteraction({
+          action: voteType,
+          actionId: targetId,
+          actionTarget: targetType,
+          authorId: contentAuthorId,
+        });
+      });
     });
 
-    revalidatePath(ROUTES.QUESTION(targetId));
+    revalidatePath(ROUTES.QUESTION(questionId));
 
     return { success: true };
   } catch (error) {

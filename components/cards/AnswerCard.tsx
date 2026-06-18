@@ -9,8 +9,7 @@ import UserAvatar from "../UserAvatar";
 import { Suspense } from "react";
 import Votes from "../votes/Votes";
 import { hasVoted } from "@/lib/actions/vote.action";
-
-// import EditDeleteAction from "../user/EditDeleteAction";
+import EditDeleteAction from "../user/EditDeleteAction";
 
 interface Props extends Answer {
   containerClasses?: string;
@@ -43,7 +42,7 @@ const AnswerCard = ({
 
       {showActionBtns && (
         <div className="background-light800 flex-center absolute -right-2 -top-5 size-9 rounded-full">
-          {/* EditDeleteAction will be added later: <EditDeleteAction type="Answer" itemId={id} /> */}
+          <EditDeleteAction type="Answer" itemId={id} />
         </div>
       )}
 
