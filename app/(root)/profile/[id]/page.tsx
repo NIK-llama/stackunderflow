@@ -12,19 +12,18 @@ import DataRenderer from "@/components/DataRenderer";
 import Pagination from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Stats from "@/components/user/Stats";
 import ProfileLink from "@/components/user/ProfileLink";
-// Stats component is not yet implemented, comment out for now
-// import Stats from "@/components/user/Stats";
 import UserAvatar from "@/components/UserAvatar";
 import { EMPTY_ANSWERS, EMPTY_QUESTION, EMPTY_TAGS } from "@/constants/states";
 import {
   getUser,
   getUserAnswers,
   getUserQuestions,
-  // getUserStats is not yet implemented, comment out for now
-  // getUserStats,
+  getUserStats,
   getUserTopTags,
 } from "@/lib/actions/user.action";
+
 
 const ProfilePage = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
@@ -49,8 +48,7 @@ const ProfilePage = async ({ params, searchParams }: RouteParams) => {
 
   const { user } = data!;
 
-  // getUserStats is not yet implemented, comment out for now
-  // const { data: userStats } = await getUserStats({ userId: id });
+  const { data: userStats } = await getUserStats({ userId: id });
 
   const {
     success: userQuestionsSuccess,
@@ -141,13 +139,12 @@ const ProfilePage = async ({ params, searchParams }: RouteParams) => {
         </div>
       </section>
 
-      {/* Stats component is not yet implemented, comment out for now */}
-      {/* <Stats
+      <Stats
         totalQuestions={userStats?.totalQuestions || 0}
         totalAnswers={userStats?.totalAnswers || 0}
         badges={userStats?.badges || { GOLD: 0, SILVER: 0, BRONZE: 0 }}
         reputationPoints={user.reputation || 0}
-      /> */}
+      />
 
       <section className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-[2]">

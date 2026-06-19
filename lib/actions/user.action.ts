@@ -6,6 +6,7 @@ import {
   PaginatedSearchParams,
   Question,
   Answer,
+  Badges,
 } from "@/types/global";
 import { User, Prisma } from "@/app/generated/prisma/client";
 import prisma from "../prisma";
@@ -17,13 +18,16 @@ import {
   GetUserQuestionsSchema,
   GetUsersAnswersSchema,
   GetUserTagsSchema,
+  UpdateUserSchema,
 } from "../validations";
 import {
   GetUserParams,
   GetUserQuestionsParams,
   GetUserAnswersParams,
   GetUserTagsParams,
+  UpdateUserParams,
 } from "@/types/action";
+import { assignBadges } from "../utils";
 
 
 export async function getUsers(params: PaginatedSearchParams): Promise<
@@ -327,5 +331,98 @@ export async function getUserTopTags(
     return handleError(error) as ErrorResponse;
   }
 }
+
+export async function getUserStats(params: GetUserParams): Promise<
+  ActionResponse<{
+    totalQuestions: number;
+    totalAnswers: number;
+    badges: Badges;
+  }>
+> {
+  const validationResult = await action({
+    params,
+    schema: GetUserSchema,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { userId } = validationResult.params!;
+
+  try {
+    const questionStats = await prisma.question.aggregate({
+      where: { authorId: userId },
+      _count: { id: true },
+      _sum: {
+        upvotes: true,
+        views: true,
+      },
+    });
+
+    const answerStats = await prisma.answer.aggregate({
+      where: { authorId: userId },
+      _count: { id: true },
+      _sum: {
+        upvotes: true,
+      },
+    });
+
+    const badges = assignBadges({
+      criteria: [
+        { type: "ANSWER_COUNT", count: answerStats._count.id || 0 },
+        { type: "QUESTION_COUNT", count: questionStats._count.id || 0 },
+        {
+          type: "QUESTION_UPVOTES",
+          count: (questionStats._sum.upvotes || 0) + (answerStats._sum.upvotes || 0),
+        },
+        { type: "TOTAL_VIEWS", count: questionStats._sum.views || 0 },
+      ],
+    });
+
+    return {
+      success: true,
+      data: {
+        totalQuestions: questionStats._count.id || 0,
+        totalAnswers: answerStats._count.id || 0,
+        badges,
+      },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
+export async function updateUser(
+  params: UpdateUserParams,
+): Promise<ActionResponse<{ user: User }>> {
+  const validationResult = await action({
+    params,
+    schema: UpdateUserSchema,
+    authorize: true,
+  });
+
+  if (validationResult instanceof Error) {
+    return handleError(validationResult) as ErrorResponse;
+  }
+
+  const { user } = validationResult.session!;
+  const userId = user?.id;
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: params,
+    });
+
+    return {
+      success: true,
+      data: { user: JSON.parse(JSON.stringify(updatedUser)) },
+    };
+  } catch (error) {
+    return handleError(error) as ErrorResponse;
+  }
+}
+
 
 

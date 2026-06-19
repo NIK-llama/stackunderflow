@@ -1,3 +1,26 @@
-export default function EditProfilePage() {
-  return null;
-}
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import ProfileForm from "@/components/forms/ProfileForm";
+import ROUTES from "@/constants/routes";
+import { getUser } from "@/lib/actions/user.action";
+import { User } from "@/types/global";
+
+const Page = async () => {
+  const session = await auth();
+  if (!session?.user?.id) redirect(ROUTES.SIGN_IN);
+
+  const { success, data } = await getUser({ userId: session.user.id });
+  if (!success || !data) redirect(ROUTES.SIGN_IN);
+
+  return (
+    <>
+      <h1 className="h1-bold text-dark100_light900">Edit Profile</h1>
+
+      <div className="mt-9">
+        <ProfileForm user={data.user as User} />
+      </div>
+    </>
+  );
+};
+
+export default Page;

@@ -133,6 +133,9 @@ export interface UpdateUserParams {
   email?: string;
   image?: string;
   password?: string;
+  bio?: string;
+  location?: string;
+  portfolio?: string;
 }
 
 export interface GlobalSearchParams {
