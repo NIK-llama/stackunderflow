@@ -7,21 +7,21 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary-100: #fff1e6;
-  --color-primary-500: #ff7000;
+  --color-primary-100: var(--primary-100);
+  --color-primary-500: var(--primary-500);
 
-  --color-dark-100: #000000;
-  --color-dark-200: #0f1117;
-  --color-dark-300: #151821;
-  --color-dark-400: #212734;
-  --color-dark-500: #3f4354;
+  --color-dark-100: var(--dark-100);
+  --color-dark-200: var(--dark-200);
+  --color-dark-300: var(--dark-300);
+  --color-dark-400: var(--dark-400);
+  --color-dark-500: var(--dark-500);
 
-  --color-light-400: #858ead;
-  --color-light-500: #7b8ec8;
-  --color-light-700: #dce3f1;
-  --color-light-800: #f4f6f8;
-  --color-light-850: #fdfdfd;
-  --color-light-900: #ffffff;
+  --color-light-400: var(--light-400);
+  --color-light-500: var(--light-500);
+  --color-light-700: var(--light-700);
+  --color-light-800: var(--light-800);
+  --color-light-850: var(--light-850);
+  --color-light-900: var(--light-900);
 
   --color-link-100: #1da1f2;
 
@@ -87,7 +87,7 @@
 }
 
 @utility background-light800_darkgradient {
-  @apply bg-light-800 dark:dark-gradient;
+  @apply bg-light-800 dark:bg-dark-300;
 }
 
 @utility background-light800_dark400 {
@@ -169,11 +169,11 @@
 }
 
 @utility light-border {
-  @apply border-light-800 dark:border-dark-300;
+  @apply border-light-800 dark:border-white/[0.08];
 }
 
 @utility light-border-2 {
-  @apply border-light-700! dark:border-dark-400!;
+  @apply border-light-700! dark:border-white/[0.12]!;
 }
 
 @utility h1-bold {
@@ -273,7 +273,8 @@
 }
 
 @utility primary-gradient {
-  background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+  background: var(--primary-500) !important;
+  color: var(--primary-foreground) !important;
 }
 
 @utility dark-gradient {
@@ -298,10 +299,9 @@
 }
 
 @utility primary-text-gradient {
-  background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--primary-500) !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
 }
 
 @utility flex-center {
@@ -317,7 +317,7 @@
 }
 
 @utility card-wrapper {
-  @apply bg-light-900 dark:dark-gradient shadow-light-100 dark:shadow-dark-100;
+  @apply bg-light-900 dark:bg-dark-300 shadow-light-100 dark:shadow-dark-100;
 }
 
 @utility btn {
@@ -354,34 +354,78 @@
   }
 }
 
+/* Style for custom-scrollbar class (used by sidebars) */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 0%;
-  height: 3px;
-  border-radius: 2px;
+  width: 6px;
+  height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 50px;
+  background: rgba(136, 136, 136, 0.25);
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: rgba(136, 136, 136, 0.45);
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Global scrollbar styling for a premium, unified scrolling experience */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(136, 136, 136, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(136, 136, 136, 0.45);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Firefox compatibility */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(136, 136, 136, 0.25) transparent;
+}
+
+.dark * {
+  scrollbar-color: rgba(255, 255, 255, 0.09) transparent;
 }
 
 .active-theme {
@@ -513,72 +557,108 @@ code {
 */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Custom Light theme variables */
+  --primary-100: #e8e8e8;
+  --primary-500: #111111;
+
+  --dark-100: #111111;
+  --dark-200: #222222;
+  --dark-300: #4b5563; /* Medium dark gray text for inactive navs */
+  --dark-400: #6b7280;
+  --dark-500: #8c929d;
+
+  --light-400: #6b7280; /* Readable badge text in light mode */
+  --light-500: #6b7280;
+  --light-700: #e5e7eb;
+  --light-800: #e5e7eb;
+  --light-850: #f5f5f5; /* Layout background */
+  --light-900: #ffffff; /* Sidebar / Navbar background */
+
+  /* shadcn custom properties mapped to Hex colors */
+  --background: #f5f5f5;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #111111;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #111111;
+  --muted: #f5f5f5;
+  --muted-foreground: #6b7280;
+  --accent: #f5f5f5;
+  --accent-foreground: #111111;
+  --destructive: #EF4444;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #111111;
+  
+  --sidebar: #ffffff;
+  --sidebar-foreground: #111111;
+  --sidebar-primary: #111111;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #111111;
 }
-/*
-  ---break---
-*/
+
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Custom Dark theme variables (Monkeytype style) */
+  --primary-100: #2c2e31;
+  --primary-500: #e2b714; /* Yellow Accent */
+
+  --dark-100: #323437; /* Background */
+  --dark-200: #2c2e31; /* Secondary Surface */
+  --dark-300: #36393d; /* Elevated Surface */
+  --dark-400: #3b3d40; /* Border */
+  --dark-500: #646669; /* Secondary Text */
+
+  --light-400: #8f908a; /* Readable warm gray text for badges/placeholders/inactives */
+  --light-500: #8f908a;
+  --light-700: #8f908a;
+  --light-800: #8f908a;
+  --light-850: #323437;
+  --light-900: #d1d0c5; /* Primary Text */
+
+  /* shadcn custom properties mapped to Hex colors */
+  --background: #323437;
+  --foreground: #d1d0c5;
+  --card: #36393d;
+  --card-foreground: #d1d0c5;
+  --popover: #36393d;
+  --popover-foreground: #d1d0c5;
+  --primary: #e2b714;
+  --primary-foreground: #2c2e31;
+  --secondary: #2c2e31;
+  --secondary-foreground: #d1d0c5;
+  --muted: #2c2e31;
+  --muted-foreground: #646669;
+  --accent: #2c2e31;
+  --accent-foreground: #e2b714;
+  --destructive: #EF4444;
+  --border: #3b3d40;
+  --input: #3b3d40;
+  --ring: #e2b714;
+
+  --sidebar: #2c2e31;
+  --sidebar-foreground: #d1d0c5;
+  --sidebar-primary: #e2b714;
+  --sidebar-primary-foreground: #2c2e31;
+  --sidebar-accent: #36393d;
+  --sidebar-accent-foreground: #e2b714;
+  --sidebar-border: #3b3d40;
+  --sidebar-ring: #e2b714;
+}
+
+/* Active sidebar link icon colors for light/dark button states */
+html:not(.dark) .primary-gradient img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.dark .primary-gradient img {
+  filter: brightness(0) saturate(100%) invert(18%) sepia(8%) saturate(319%) hue-rotate(182deg) brightness(91%) contrast(92%) !important;
 }
 
