@@ -25,18 +25,35 @@ export const fetchJobs = async (filters: JobFilterParams) => {
   const { query, page } = filters;
 
   const headers = {
-    "X-RapidAPI-Key": process.env.NEXT_PUBLIC_RAPID_API_KEY ?? "",
+    "X-RapidAPI-Key": process.env.RAPID_API_KEY ?? "",
     "X-RapidAPI-Host": "jsearch.p.rapidapi.com",
   };
 
-  const response = await fetch(
-    `https://jsearch.p.rapidapi.com/search?query=${query}&page=${page}`,
-    {
-      headers,
+  try {
+    const response = await fetch(
+      `https://jsearch.p.rapidapi.com/search-v2?query=${query}&page=${page}`,
+      {
+        headers,
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`JSearch API failed: Status ${response.status} - ${response.statusText}`);
+      const text = await response.text();
+      console.error("API response text:", text);
+      return [];
     }
-  );
 
-  const result = await response.json();
+    const result = await response.json();
+    
+    if (!result || !result.data || !result.data.jobs) {
+      console.error("JSearch API returned no data. Result:", result);
+      return [];
+    }
 
-  return result.data;
+    return result.data.jobs;
+  } catch (error) {
+    console.error("Error fetching jobs from RapidAPI JSearch:", error);
+    return [];
+  }
 };
